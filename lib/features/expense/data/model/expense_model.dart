@@ -2,21 +2,22 @@ import 'dart:convert';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class ExpenseModel {
-  int id;
+  String? id;
   String title;
-  double amount;
+  num amount;
   bool isAmountType;
   ExpenseModel({
-    required this.id,
+    this.id,
     required this.title,
     required this.amount,
     required this.isAmountType,
   });
+  
 
   ExpenseModel copyWith({
-    int? id,
+    String? id,
     String? title,
-    double? amount,
+    num? amount,
     bool? isAmountType,
   }) {
     return ExpenseModel(
@@ -38,9 +39,9 @@ class ExpenseModel {
 
   factory ExpenseModel.fromMap(Map<String, dynamic> map) {
     return ExpenseModel(
-      id: map['id'] as int,
+      id: map['id'] != null ? map['id'] as String : null,
       title: map['title'] as String,
-      amount: map['amount'] as double,
+      amount: map['amount'] as num,
       isAmountType: map['isAmountType'] as bool,
     );
   }
