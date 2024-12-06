@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:expense_todo_app/features/expense/presentation/provider/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +12,27 @@ class ExpensePage extends StatefulWidget {
 }
 
 class _ExpensePageState extends State<ExpensePage> {
+  ScrollController scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    final expenseProvider =
+        Provider.of<ExpenseProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      expenseProvider.fetchExpenses();
+      log('init');
+      scrollController.addListener(() {
+        if (scrollController.position.pixels ==
+                scrollController.position.maxScrollExtent &&
+            expenseProvider.isLoading) {
+          expenseProvider.fetchExpenses();
+        }
+      });
+    });
+
+    // expenseProvider.initData(scrollController: scrollController);
+  }
+
   @override
   Widget build(BuildContext context) {
     final expenseProvider = context.watch<ExpenseProvider>();
@@ -20,12 +43,14 @@ class _ExpensePageState extends State<ExpensePage> {
       ),
       body: Consumer<ExpenseProvider>(
         builder: (context, expProvider, child) {
+          if (expProvider.isLoading && expProvider.expenseList.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
           if (expProvider.expenseList.isEmpty) {
-            return const Center(
-              child: Text('no expenses available'),
-            );
+            return const Center(child: Text('No expenses available'));
           }
           return ListView.builder(
+            controller: scrollController,
             itemCount: expProvider.expenseList.length,
             itemBuilder: (context, index) {
               final exp = expProvider.expenseList[index];
@@ -33,6 +58,7 @@ class _ExpensePageState extends State<ExpensePage> {
                 child: ListTile(
                   title: Text(exp.title),
                   subtitle: Text(exp.amount.toString()),
+                  trailing: Text(exp.isAmountType ? 'Credit' : 'Debit'),
                 ),
               );
             },
@@ -49,7 +75,6 @@ class _ExpensePageState extends State<ExpensePage> {
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Title Input
                     TextField(
                       controller: expenseProvider.titleController,
                       decoration: InputDecoration(
@@ -60,8 +85,6 @@ class _ExpensePageState extends State<ExpensePage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                    // Amount Input
                     TextField(
                       controller: expenseProvider.amountController,
                       keyboardType: TextInputType.number,
@@ -73,7 +96,6 @@ class _ExpensePageState extends State<ExpensePage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-
                     SwitchListTile(
                       title: Text(
                           expenseProvider.isAmountType ? "Credit" : "Debit"),
@@ -87,6 +109,7 @@ class _ExpensePageState extends State<ExpensePage> {
                 actions: [
                   TextButton(
                     onPressed: () {
+                      expenseProvider.clearController();
                       Navigator.pop(context);
                     },
                     child: const Text("Cancel"),
@@ -96,6 +119,7 @@ class _ExpensePageState extends State<ExpensePage> {
                   ElevatedButton(
                     onPressed: () async {
                       await expenseProvider.addExpenses();
+                      expenseProvider.clearController();
                       Navigator.pop(context);
                     },
                     child: const Text("Add"),

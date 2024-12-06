@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_)=> ExpenseProvider())
+      ChangeNotifierProvider(create: (_) => ExpenseProvider())
     ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

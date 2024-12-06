@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 class ExpenseProvider with ChangeNotifier {
   final titleController = TextEditingController();
   final amountController = TextEditingController();
+  final scrollController = ScrollController;
   bool isAmountType = false;
 
   List<ExpenseModel> expenseList = [];
@@ -42,6 +43,7 @@ class ExpenseProvider with ChangeNotifier {
     if (isLoading || !hasMoreData) return;
     isLoading = true;
     notifyListeners();
+    log(isLoading.toString());
 
     try {
       Query query = firestore
@@ -57,11 +59,13 @@ class ExpenseProvider with ChangeNotifier {
       log('message');
       if (querySnapshot.docs.isNotEmpty) {
         lastDocument = querySnapshot.docs.last;
-
-        for (var exp in querySnapshot.docs) {
-          expenseList
-              .add(ExpenseModel.fromMap((exp.data() as Map<String, dynamic>)));
-        }
+        final newList = querySnapshot.docs.map((exp)=> ExpenseModel.fromMap(exp.data() as Map<String,dynamic>));
+         expenseList.addAll(newList);
+        // for (var exp in querySnapshot.docs) {
+        //   expenseList
+        //       .add(ExpenseModel.fromMap((exp.data() as Map<String, dynamic>)));
+        // }
+        log(expenseList.length.toString());
       } else {
         hasMoreData = false;
         log('no expense available');
@@ -69,5 +73,23 @@ class ExpenseProvider with ChangeNotifier {
     } catch (e) {
       log(e.toString());
     }
+  }
+
+  Future<void> initData({required ScrollController scrollController}) async {
+    fetchExpenses();
+    log('init');
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+              scrollController.position.maxScrollExtent &&
+          !isLoading) {
+            fetchExpenses();
+        log('message');
+      }
+    });
+  }
+
+  void clearController(){
+    titleController.clear();
+    amountController.clear();
   }
 }
