@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "135150273921",
+    "project_id": "expense-todo-1de6f",
+    "storage_bucket": "expense-todo-1de6f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135150273921:android:7080280352285d7b5b9480",
+        "android_client_info": {
+          "package_name": "com.example.expense_todo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFoJJs_yefuWiEyMM80yDe43UlLCIosQk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
