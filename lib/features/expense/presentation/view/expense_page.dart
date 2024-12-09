@@ -21,16 +21,16 @@ class _ExpensePageState extends State<ExpensePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       expenseProvider.fetchExpenses();
       log('init');
-      scrollController.addListener(() {
-        if (scrollController.position.pixels ==
-                scrollController.position.maxScrollExtent &&
-            expenseProvider.isLoading) {
-          expenseProvider.fetchExpenses();
-        }
-      });
+      // scrollController.addListener(() {
+      //   if (scrollController.position.pixels ==
+      //           scrollController.position.maxScrollExtent &&
+      //       !expenseProvider.isLoading &&
+      //       !expenseProvider.noMoreData) {
+      //     expenseProvider.fetchExpenses();
+      //   }
+      // });
+      expenseProvider.initData(scrollController: scrollController);
     });
-
-    // expenseProvider.initData(scrollController: scrollController);
   }
 
   @override
