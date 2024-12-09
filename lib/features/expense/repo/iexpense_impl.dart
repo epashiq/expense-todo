@@ -63,4 +63,33 @@ class IexpenseImpl implements IexpenseFacade {
     lastDocument =null;
     noMoreData = false;
   }
-}
+  
+  @override
+  Future<Either<MainFailure, Map<String, double>>> calculateTotalAmounts()async {
+    try {
+      final querySnapshot = await firestore.collection('expense').get();
+      final expenseList = querySnapshot.docs.map(
+        (exp) => ExpenseModel.fromMap(exp.data() as Map<String, dynamic>),
+      );
+
+      double totalCredit = 0.0;
+      double totalDebit = 0.0;
+
+      for (var expense in expenseList) {
+        if (expense.isAmountType) {
+          totalCredit += expense.amount;
+        } else {
+          totalDebit += expense.amount;
+        }
+      }
+
+      return right({
+        'credit': totalCredit,
+        'debit': totalDebit,
+      });
+    } catch (e) {
+      return left(MainFailure.serverFailure(errorMessage: e.toString()));
+    }
+  }
+  }
+

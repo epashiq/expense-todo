@@ -1,9 +1,7 @@
 import 'package:expense_todo_app/features/expense/data/iexpense_facade.dart';
 import 'package:expense_todo_app/features/expense/presentation/provider/expense_provider.dart';
 import 'package:expense_todo_app/features/expense/presentation/view/expense_page.dart';
-import 'package:expense_todo_app/firebase_options.dart';
 import 'package:expense_todo_app/general/di/injection.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -11,4 +11,7 @@ abstract class IexpenseFacade {
   }
 
   void clearExpenseList();
+
+  Future<Either<MainFailure, Map<String, double>>> calculateTotalAmounts();
+
 }
