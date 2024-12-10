@@ -32,7 +32,7 @@ class IexpenseImpl implements IexpenseFacade {
 
   @override
   Future<Either<MainFailure, List<ExpenseModel>>> fetchExpenses() async {
-    if(noMoreData)return right([]);
+    if (noMoreData) return right([]);
     try {
       Query query =
           firestore.collection('expense').orderBy('title', descending: false);
@@ -49,27 +49,30 @@ class IexpenseImpl implements IexpenseFacade {
         lastDocument = querySnapshot.docs.last;
       }
 
-      final newList = querySnapshot.docs.map(
-          (exp) => ExpenseModel.fromMap(exp.data() as Map<String, dynamic>)).toList();
+      final newList = querySnapshot.docs
+          .map(
+              (exp) => ExpenseModel.fromMap(exp.data() as Map<String, dynamic>))
+          .toList();
 
       return right(newList);
     } catch (e) {
-        return left(MainFailure.serverFailure(errorMessage: e.toString()));
+      return left(MainFailure.serverFailure(errorMessage: e.toString()));
     }
   }
-  
+
   @override
   void clearExpenseList() {
-    lastDocument =null;
+    lastDocument = null;
     noMoreData = false;
   }
-  
+
   @override
-  Future<Either<MainFailure, Map<String, double>>> calculateTotalAmounts()async {
+  Future<Either<MainFailure, Map<String, double>>>
+      calculateTotalAmounts() async {
     try {
       final querySnapshot = await firestore.collection('expense').get();
       final expenseList = querySnapshot.docs.map(
-        (exp) => ExpenseModel.fromMap(exp.data() as Map<String, dynamic>),
+        (exp) => ExpenseModel.fromMap(exp.data()),
       );
 
       double totalCredit = 0.0;
@@ -91,5 +94,4 @@ class IexpenseImpl implements IexpenseFacade {
       return left(MainFailure.serverFailure(errorMessage: e.toString()));
     }
   }
-  }
-
+}

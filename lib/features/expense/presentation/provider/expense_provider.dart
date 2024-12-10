@@ -14,6 +14,9 @@ class ExpenseProvider with ChangeNotifier {
   final scrollController = ScrollController;
   bool isAmountType = false;
 
+  double totalCredit = 0.0;
+    double totalDebit = 0.0;
+
   List<ExpenseModel> expenseList = [];
   // DocumentSnapshot? lastDocument;
   bool isLoading = false;
@@ -97,21 +100,36 @@ class ExpenseProvider with ChangeNotifier {
   //   }
   // }
 
-  Future<void> fetchExpenses() async {
-    isLoading = true;
-    notifyListeners();
+Future<void> fetchExpenses()async{
+  isLoading = true;
+  notifyListeners();
+  final result = await iexpenseFacade.fetchExpenses();
 
-    final result = await iexpenseFacade.fetchExpenses();
+  result.fold((failure) {
+    log(failure.errorMessage);
+  }, (success) {
+    expenseList.addAll(success);
+
+  },);
+  isLoading = false;
+  notifyListeners();
+}
+
+  Future<void> calculateExpenses() async {
+    
+    final result = await iexpenseFacade.calculateTotalAmounts();
+
     result.fold(
       (failure) {
         log(failure.errorMessage);
       },
-      (success) {
-        expenseList.addAll(success);
+      (success)async {
+        totalCredit = success['credit'] ?? 0.0;
+        totalDebit = success['debit'] ?? 0.0;
+        await calculateExpenses();
+        notifyListeners();
       },
     );
-    isLoading = false;
-    notifyListeners();
   }
 
   Future<void> initData({required ScrollController scrollController}) async {
